@@ -1,6 +1,6 @@
 workspace "ColleGUI"
     configurations { "Debug", "Release" }
-    location "build"
+    location "."
 
 project "ColleGUI"
     kind "ConsoleApp"
