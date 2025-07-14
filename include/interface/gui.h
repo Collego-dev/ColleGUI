@@ -20,10 +20,9 @@ struct CGUIState{
 #include <X11/Xlib.h>
 
 struct CGUIState{
-    unsigned int y;
-    unsigned int x;
-    unsigned int width;
-    unsigned int height;
+    Display *display;
+    XEvent event;
+    Window window;
     char title[256];
 }typedef CGUIState;
 
