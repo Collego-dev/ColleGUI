@@ -21,7 +21,7 @@ struct CGUIState{
  *
  * Crate a Simple GUI.
  * WARN: Please free after use*/
-CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height);
+CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const char *title);
 
 
 #endif /* _INTERFACE_GUI_H */
