@@ -17,9 +17,11 @@ function common_library_settings()
 
     filter "configurations:Debug"
         symbols "On"
+        links { "X11" }
 
     filter "configurations:Release"
         optimize "On"
+        links { "X11" }
 
     filter {} -- reset
 end
@@ -53,6 +55,9 @@ project "test"
 
     filter "configurations:Release"
         optimize "On"
+
+    filter "system:linux"
+        links { "X11" }
 
     filter {} -- reset
 
