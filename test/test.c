@@ -3,13 +3,25 @@
 
 bool quited = false;
 
-
+#ifdef _WIN32
 
 int main() {
-    CGUIState *g = CCreateGUI(0, 0, 300, 200);
+    CGUIState *g = CCreateGUI(0, 0, 300, 200, "ColleGUI Test");
 
     while (!quited) {
 
     }
 }
+
+#else /* X11 */
+
+int main() {
+    CGUIState *g = CCreateGUI(0, 0, 300, 200, "ColleGUI Test");
+
+    while (!quited) {
+
+    }
+}
+
+#endif
 

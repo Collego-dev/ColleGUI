@@ -9,7 +9,7 @@
 
 CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const char *title) {
     static TCHAR szClassName[256];
-    _stprintf(szClassName, _T("%s"), title);
+    _tcscpy(szClassName, title);
     WNDCLASS wc = {0};
     wc.lpfnWndProc = DefWindowProc;
     wc.hInstance = GetModuleHandle(NULL);
