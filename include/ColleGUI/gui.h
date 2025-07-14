@@ -37,7 +37,11 @@ struct CGUIState{
 * @param title title of the window
 * @return CGUIState pointer on success, NULL on failure
 */
+#ifdef _WIN32
+CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const TCHAR *title);
+#else
 CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const char *title);
+#endif
 
 /**
 * Show the GUI window

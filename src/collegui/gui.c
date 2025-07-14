@@ -7,9 +7,12 @@
 
 #ifdef _WIN32
 
-CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const char *title) {
+CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const TCHAR *title) {
     static TCHAR szClassName[256];
-    _tcscpy(szClassName, title);
+    size_t len = _tcslen(title);
+    if (len >= 256) len = 255;
+    _tcsncpy(szClassName, title, len);
+    szClassName[len] = _T('\0');
     WNDCLASS wc = {0};
     wc.lpfnWndProc = DefWindowProc;
     wc.hInstance = GetModuleHandle(NULL);
