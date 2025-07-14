@@ -12,6 +12,7 @@ struct CGUIState{
     unsigned int x;
     unsigned int width;
     unsigned int height;
+    char title[256];
 }typedef CGUIState;
 
 #endif
