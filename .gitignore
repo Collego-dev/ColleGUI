@@ -61,7 +61,6 @@ dkms.conf
 
 # debug information files
 *.dwo
-.cache/
 
 # remove clangd cache 
 .cache
