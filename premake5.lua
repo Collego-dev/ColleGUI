@@ -1,6 +1,7 @@
 workspace "ColleGUI"
     configurations { "Debug", "Release" }
     architecture "x86_64"
+    startproject "test"  -- デフォルト起動プロジェクト（任意）
 
 function common_library_settings()
     language "C"
@@ -20,17 +21,38 @@ function common_library_settings()
     filter "configurations:Release"
         optimize "On"
 
-    filter {} -- reset filter
+    filter {} -- reset
 end
 
-
 project "ColleGUI"
-    kind "SharedLib"
     kind "StaticLib"
+    common_library_settings()
 
     filter "system:windows"
-        defines { "MYLIBRARY_EXPORTS" } -- for __declspec(dllexport)
+        defines { "MYLIBRARY_EXPORTS" }
 
     filter {} -- reset
-    common_library_settings()
+
+project "test"
+    kind "ConsoleApp"
+    language "C"
+    targetdir ("bin/%{cfg.buildcfg}/%{prj.name}")
+    objdir ("bin-int/%{cfg.buildcfg}/%{prj.name}")
+
+    files { "test/**.c", "test/**.h" }
+
+    includedirs { "include" }
+
+    links { "ColleGUI" }
+    dependson { "ColleGUI" }
+
+    libdirs { "bin/%{cfg.buildcfg}/ColleGUI" } -- StaticLib or SharedLib output
+
+    filter "configurations:Debug"
+        symbols "On"
+
+    filter "configurations:Release"
+        optimize "On"
+
+    filter {} -- reset
 
