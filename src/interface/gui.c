@@ -47,11 +47,12 @@ CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height) {
 }
 
 #else /* X11 */
+
 #include <X11/Xlib.h>
 #include <stdio.h>
 
 
-CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height)
+CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const char *title)
 {
     Display* display = XOpenDisplay(NULL);
 
@@ -77,7 +78,7 @@ CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height)
 
     state->display = display;
     state->event = event;
-    state->root = window;
+    state->window = window;
 
     return state;
 }
