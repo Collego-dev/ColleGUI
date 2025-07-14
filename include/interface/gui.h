@@ -1,17 +1,18 @@
 #ifndef _INTERFACE_GUI_H
 #define _INTERFACE_GUI_H
 
-
 #ifdef _WIN32
 
 #else
 #include <X11/Xlib.h>
 
+
 struct CGUIState{
-    Display *display;
-    Window root;
-    XEvent event;
-} typedef CGUIState;
+    unsigned int y;
+    unsigned int x;
+    unsigned int width;
+    unsigned int height;
+}typedef CGUIState;
 
 #endif
 
