@@ -8,6 +8,7 @@
 #include <wingdi.h>
 
 struct CGUIState{
+    HWND hwnd;
     unsigned int y;
     unsigned int x;
     unsigned int width;

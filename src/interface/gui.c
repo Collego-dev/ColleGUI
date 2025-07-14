@@ -2,13 +2,14 @@
 #include "interface/gui.h"
 
 #ifdef _WIN32
-#include <windows.h>
 #include <tchar.h>
-#include <commctrl.h>
-#include <wingdi.h>
+#endif
 
-CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height) {
-    static const TCHAR szClassName[] = _T("ColleGUIWindow");
+#ifdef _WIN32
+
+CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const char *title) {
+    static TCHAR szClassName[256];
+    _tcscpy(szClassName, title);
     WNDCLASS wc = {0};
     wc.lpfnWndProc = DefWindowProc;
     wc.hInstance = GetModuleHandle(NULL);
@@ -22,7 +23,7 @@ CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height) {
 
     HWND hwnd = CreateWindow(
         szClassName,
-        _T("ColleGUI"),
+        szClassName,
         WS_OVERLAPPEDWINDOW,
         x, y,
         width, height,
@@ -35,7 +36,7 @@ CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height) {
         return NULL;
     }
 
-    CGUIState *state = malloc(sizeof(struct CGUIState));
+    CGUIState *state = malloc(sizeof(CGUIState));
     if (!state) {
         DestroyWindow(hwnd);
         return NULL;
