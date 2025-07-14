@@ -1,3 +1,6 @@
+#include "ColleGUI/gui.h"
+#include <X11/X.h>
+#include <string.h>
 #ifndef _WIN32
 #include <X11/Xlib.h>
 #include <stdio.h>
@@ -26,13 +29,17 @@ CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, con
     XSetWMProtocols(display, window, & wm_delete_window, 1);
 
     XStoreName(display, window, title);
+    XSelectInput(display, window, ExposureMask | ButtonPressMask);
 
     XEvent event;
+
+    GC gc = XCreateGC(display, window, 0, NULL);
 
     CGUIState *state = malloc(sizeof(struct CGUIState));
     state->display = display;
     state->event = event;
     state->window = window;
+    state->gc = gc;
     state->x = x;
     state->y = y;
     state->width = width;
@@ -48,19 +55,55 @@ CGUIState *CShowGUI(CGUIState *state) {
 }
 
 CGUIState *CUpdateGUI(CGUIState *state) {
-    XExposeEvent expose;
-    expose.type = Expose;
-    expose.display = state->display;
-    expose.window = state->window;
-    expose.x = state->x;
-    expose.y = state->y;
-    expose.width = state->width;
-    expose.height = state->height;
-    expose.count = 0;
+    XNextEvent(state->display, &state->event);
 
-    XSendEvent(state->display, state->window, False, ExposureMask, (XEvent *)&expose);
-    XFlush(state->display);
-    return state;
+    XEvent *ev = &state->event;
+
+    if (ev->type == Expose) {
+        for (int i = 0; i < state->button_count; i++) {
+            Button *btn = &state->buttons[i];
+            XDrawRectangle(state->display, state->window, state->gc, btn->x, btn->y, btn->width, btn->height);
+            XDrawString(state->display, state->window, state->gc, btn->x + 5, btn->y + 15, btn->label, strlen(btn->label));
+        }
+    } else if (ev->type == ButtonPress) {
+       int x = ev->xbutton.x;
+       int y = ev->xbutton.y;
+
+       for (int i=0; i < state->button_count; i++) {
+           Button *b = &state->buttons[i];
+           if (x >= b->x && x <= b->x + b->width &&
+                   y >= b->y && y <= b->y + b->height) {
+               if (b->callback)
+                   b->callback(b->user_data);
+           }
+       }
+   }
+   return state;
 }
+
+
+bool CShowButton(CGUIState *state, int x, int y, int width, int height, const char *label, void (*callback)(void *), void *user_data){
+    if (state->button_count >= state->button_capacity) {
+        int new_capa = state->button_capacity == 0 ? 8 : state->button_capacity * 2;
+        Button *new_buttons = realloc(state->buttons, new_capa * sizeof(Button));
+
+        if (!new_buttons){
+            perror("ColleGUI(X11): realloc: ");
+            return false;
+        }
+        state->buttons = new_buttons;
+        state->button_capacity = new_capa;
+    }
+
+    state->buttons[state->button_count++] = (Button) { .x=x, .y = y, .width = width, .height = height, .label = label, .callback = callback, .user_data = user_data };
+
+    return false;
+}
+
+void CFreeGUI(CGUIState *state){
+    free(state->buttons);
+    free(state);
+}
+
 
 #endif
