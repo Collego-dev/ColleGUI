@@ -4,6 +4,8 @@
 struct CGUIState{
     unsigned int y;
     unsigned int x;
+    unsigned int width;
+    unsigned int height;
 }typedef CGUIState;
 
 CGUIState CCreateGUI(unsigned int x, unsigned int y);
