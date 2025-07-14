@@ -10,6 +10,7 @@ int main() {
     CGUIState *g = CCreateGUI(0, 0, 300, 200, "ColleGUI Test");
     CShowGUI(g);
     CUpdateGUI(g);
+    free(g);
 }
 
 #else /* X11 */
