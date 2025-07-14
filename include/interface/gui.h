@@ -39,4 +39,19 @@ struct CGUIState{
 */
 CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const char *title);
 
+/**
+* Show the GUI window
+* @param state CGUIState pointer
+* @return CGUIState pointer on success, NULL on failure
+*/
+CGUIState *CShowGUI(CGUIState *state);
+
+/**
+* Update the GUI window
+* @param state CGUIState pointer
+* @return CGUIState pointer on success, NULL on failure
+*/
+CGUIState *CUpdateGUI(CGUIState *state);
+
+
 #endif /* _INTERFACE_GUI_H */

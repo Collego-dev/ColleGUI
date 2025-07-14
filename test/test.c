@@ -7,9 +7,9 @@ bool quited = false;
 
 int main() {
     CGUIState *g = CCreateGUI(0, 0, 300, 200, "ColleGUI Test");
-
+    CShowGUI(g);
     while (!quited) {
-
+        CUpdateGUI(g);
     }
 }
 
