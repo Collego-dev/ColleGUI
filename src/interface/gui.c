@@ -47,6 +47,18 @@ CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, con
     return state;
 }
 
+CGUIState *CShowGUI(CGUIState *state) {
+    if (!state || !state->hwnd) return NULL;
+    ShowWindow(state->hwnd, SW_SHOW);
+    return state;
+}
+
+CGUIState *CUpdateGUI(CGUIState *state) {
+    if (!state || !state->hwnd) return NULL;
+    UpdateWindow(state->hwnd);
+    return state;
+}
+
 #else /* X11 */
 
 #include <X11/Xlib.h>
