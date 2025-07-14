@@ -4,7 +4,7 @@ workspace "ColleGUI"
 
 project "ColleGUI"
     kind "ConsoleApp"
-    language "C++"
+    language "C"
     targetdir "bin/%{cfg.buildcfg}"
 
     files { "src/**.cpp", "include/**.h" }
