@@ -1,3 +1,4 @@
+#include "ColleGUI/gui.h"
 #include <ColleGUI.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -20,6 +21,7 @@ int main() {
 int main() {
     CGUIState *g = CCreateGUI(0, 0, 300, 200, "ColleGUI Test");
 
+    CShowGUI(g);
     while (!quited) {
 
     }
