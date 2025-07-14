@@ -23,12 +23,10 @@ function common_library_settings()
     filter {} -- reset filter
 end
 
-project "ColleGUI"
-    kind "StaticLib"
-    common_library_settings()
 
 project "ColleGUI"
     kind "SharedLib"
+    kind "StaticLib"
 
     filter "system:windows"
         defines { "MYLIBRARY_EXPORTS" } -- for __declspec(dllexport)
