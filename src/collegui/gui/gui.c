@@ -1,5 +1,3 @@
-#include "ColleGUI/gui.h"
-#include <X11/X.h>
 #include <stdlib.h>
 #include "ColleGUI.h"
 
