@@ -2,7 +2,7 @@
 #include <X11/Xlib.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <ColleGUI.h>
+#include "ColleGUI.h"
 
 
 CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const char *title)
@@ -62,4 +62,5 @@ CGUIState *CUpdateGUI(CGUIState *state) {
     XFlush(state->display);
     return state;
 }
+
 #endif
