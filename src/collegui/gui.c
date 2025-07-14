@@ -4,29 +4,29 @@
 #include "ColleGUI.h"
 
 #ifdef _WIN32
+#include <windows.h>
 #include <tchar.h>
 #endif
 
 #ifdef _WIN32
 
-CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const TCHAR *title) {
-    static TCHAR szClassName[256];
-    size_t len = _tcslen(title);
-    if (len >= 256) len = 255;
-    _tcsncpy(szClassName, title, len);
-    szClassName[len] = _T('\0');
-    WNDCLASS wc = {0};
-    wc.lpfnWndProc = DefWindowProc;
-    wc.hInstance = GetModuleHandle(NULL);
+CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const char *title) {
+    wchar_t szClassName[256];
+    MultiByteToWideChar(CP_UTF8, 0, title, -1, szClassName, 255);
+    szClassName[255] = L'\0';
+
+    WNDCLASSW wc = {0};
+    wc.lpfnWndProc = DefWindowProcW;
+    wc.hInstance = GetModuleHandleW(NULL);
     wc.lpszClassName = szClassName;
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hCursor = LoadCursorW(NULL, MAKEINTRESOURCEW(IDC_ARROW));
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 
-    if (!RegisterClass(&wc) && GetLastError() != ERROR_CLASS_ALREADY_EXISTS) {
+    if (!RegisterClassW(&wc) && GetLastError() != ERROR_CLASS_ALREADY_EXISTS) {
         return NULL;
     }
 
-    HWND hwnd = CreateWindow(
+    HWND hwnd = CreateWindowW(
         szClassName,
         szClassName,
         WS_OVERLAPPEDWINDOW,

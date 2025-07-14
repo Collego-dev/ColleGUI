@@ -8,7 +8,7 @@ bool quited = false;
 #ifdef _WIN32
 
 int main() {
-    CGUIState *g = CCreateGUI(0, 0, 300, 200, _T("ColleGUI Test"));
+    CGUIState *g = CCreateGUI(0, 0, 300, 200, "あああああああああああああああああああああああああああああああああああ");
     CShowGUI(g);
     while (CUpdateGUI(g)) {
         
