@@ -41,6 +41,12 @@
 *.su
 *.idb
 *.pdb
+*.make
+*.sln
+*.vcxproj
+*.vcxproj.filters
+Makefile
+
 
 # Kernel Module Compile Results
 *.mod*
