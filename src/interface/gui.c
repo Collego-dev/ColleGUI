@@ -55,6 +55,11 @@ CGUIState *CShowGUI(CGUIState *state) {
 
 CGUIState *CUpdateGUI(CGUIState *state) {
     if (!state || !state->hwnd) return NULL;
+    MSG msg;
+    while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
     UpdateWindow(state->hwnd);
     return state;
 }
