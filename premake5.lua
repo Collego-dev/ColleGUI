@@ -9,7 +9,7 @@ function common_library_settings()
 
     files {
         "src/**.c",
-        "src/**.h"
+        "include/**.h"
     }
 
     includedirs { "include" }
