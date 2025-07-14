@@ -18,9 +18,14 @@ struct CGUIState{
 #endif
 
 /**
- *
- * Crate a Simple GUI.
- * WARN: Please free after use*/
+* create a GUI window
+* @param x x position of the window
+* @param y y position of the window
+* @param width width of the window
+* @param height height of the window
+* @param title title of the window
+* @return CGUIState pointer on success, NULL on failure
+*/
 CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const char *title);
 
 
