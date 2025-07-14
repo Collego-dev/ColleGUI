@@ -23,6 +23,10 @@ struct CGUIState{
     Display *display;
     XEvent event;
     Window window;
+    unsigned int y;
+    unsigned int x;
+    unsigned int width;
+    unsigned int height;
     char title[256];
 }typedef CGUIState;
 

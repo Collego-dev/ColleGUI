@@ -1,5 +1,7 @@
+#include "ColleGUI/gui.h"
+#include <X11/X.h>
 #include <stdlib.h>
-#include "interface/gui.h"
+#include "ColleGUI.h"
 
 #ifdef _WIN32
 #include <tchar.h>
@@ -65,7 +67,6 @@ CGUIState *CUpdateGUI(CGUIState *state) {
 }
 
 #else /* X11 */
-
 #include <X11/Xlib.h>
 #include <stdio.h>
 
@@ -92,17 +93,39 @@ CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, con
 
     XStoreName(display, window, title);
 
-    XMapWindow(display, window);
-    XFlush(display);
-
     XEvent event;
 
     CGUIState *state = malloc(sizeof(struct CGUIState));
-
     state->display = display;
     state->event = event;
     state->window = window;
+    state->x = x;
+    state->y = y;
+    state->width = width;
+    state->height = height;
 
+    return state;
+}
+
+CGUIState *CShowGUI(CGUIState *state) {
+    XMapWindow(state->display, state->window);
+    XFlush(state->display);
+    return state;
+}
+
+CGUIState *CUpdateGUI(CGUIState *state) {
+    XExposeEvent expose;
+    expose.type = Expose;
+    expose.display = state->display;
+    expose.window = state->window;
+    expose.x = state->x;
+    expose.y = state->y;
+    expose.width = state->width;
+    expose.height = state->height;
+    expose.count = 0;
+
+    XSendEvent(state->display, state->window, False, ExposureMask, (XEvent *)&expose);
+    XFlush(state->display);
     return state;
 }
 
