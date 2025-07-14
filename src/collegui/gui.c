@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "interface/gui.h"
+#include "ColleGUI/gui.h"
 
 #ifdef _WIN32
 #include <tchar.h>
