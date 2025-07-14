@@ -1,5 +1,6 @@
-#include <interface/gui.h>
+#include <ColleGUI.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 bool quited = false;
 
@@ -19,6 +20,7 @@ int main() {
     while (!quited) {
 
     }
+    free(g);
 }
 
 #endif

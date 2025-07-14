@@ -90,6 +90,11 @@ CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, con
     Atom wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", False);
     XSetWMProtocols(display, window, & wm_delete_window, 1);
 
+    XStoreName(display, window, title);
+
+    XMapWindow(display, window);
+    XFlush(display);
+
     XEvent event;
 
     CGUIState *state = malloc(sizeof(struct CGUIState));
