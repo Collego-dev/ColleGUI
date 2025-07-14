@@ -61,4 +61,7 @@ dkms.conf
 *.dwo
 .cache/
 
+# remove clangd cache 
+.cache
+
 compile_commands.json
