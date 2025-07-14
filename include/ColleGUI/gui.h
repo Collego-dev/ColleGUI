@@ -36,8 +36,12 @@ struct CGUIState{
     Display *display;
     XEvent event;
     Window window;
+    Atom wm_delete_window;
     GC gc;
     Button *buttons;
+
+    void (*quitcallback)(void *);
+    void *user_data;
 
     unsigned int button_count;
     unsigned int button_capacity;
@@ -141,6 +145,7 @@ bool CShowCheckBox(CGUIState *state, int x, int y, const char *label, bool check
 */
 bool CShowListBox(CGUIState *state, int x, int y, int width, int height, const char **items, int item_count, void (*callback)(int, void *), void *user_data);
 
+bool CSetQuitCallback(CGUIState *state, void (*quitcallback)(void *), void *user_data);
 
 void CFreeGUI(CGUIState* state);
 

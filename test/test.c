@@ -50,12 +50,18 @@ void on_button(void *user_data) {
     printf("Button clicked!\n");
 }
 
+void on_quit(void *user_data) {
+    printf("See you!\n");
+}
+
 int main() {
     CGUIState *g = CCreateGUI(0, 0, 300, 200, "ColleGUI Test");
 
     CShowGUI(g);
 
     CShowButton(g, 10, 40, 100, 30, "Button", on_button, NULL);
+
+    CSetQuitCallback(g, on_quit, NULL);
 
     while (CUpdateGUI(g)) {
 

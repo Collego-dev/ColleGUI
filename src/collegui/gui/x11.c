@@ -8,6 +8,8 @@
 #include "ColleGUI.h"
 
 
+void DefaultQuitCallback(void* user_data) {}
+
 CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const char *title)
 {
     Display* display = XOpenDisplay(NULL);
@@ -39,11 +41,14 @@ CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, con
     state->display = display;
     state->event = event;
     state->window = window;
+    state->wm_delete_window = wm_delete_window;
     state->gc = gc;
     state->x = x;
     state->y = y;
     state->width = width;
     state->height = height;
+    state->quitcallback = DefaultQuitCallback;
+    state->user_data = NULL;
 
     return state;
 }
@@ -77,6 +82,11 @@ CGUIState *CUpdateGUI(CGUIState *state) {
                    b->callback(b->user_data);
            }
        }
+   } else if (ev->type == ClientMessage) {
+       if (ev->xclient.data.l[0] == state->wm_delete_window) {
+           state->quitcallback(state->user_data);
+       }
+       return NULL;
    }
    return state;
 }
@@ -96,6 +106,13 @@ bool CShowButton(CGUIState *state, int x, int y, int width, int height, const ch
     }
 
     state->buttons[state->button_count++] = (Button) { .x=x, .y = y, .width = width, .height = height, .label = label, .callback = callback, .user_data = user_data };
+
+    return false;
+}
+
+bool CSetQuitCallback(CGUIState *state, void (*quitcallback)(void *), void *user_data) {
+    state->quitcallback = quitcallback;
+    state->user_data = user_data;
 
     return false;
 }
