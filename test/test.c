@@ -1,9 +1,8 @@
 #include "ColleGUI/gui.h"
 #include <ColleGUI.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
-
-bool quited = false;
 
 #ifdef _WIN32
 
@@ -45,14 +44,27 @@ int main() {
 
 #else /* X11 */
 
+void on_button(void *user_data) {
+    printf("Button clicked!\n");
+}
+
+void on_quit(void *user_data) {
+    printf("See you!\n");
+}
+
 int main() {
     CGUIState *g = CCreateGUI(0, 0, 300, 200, "ColleGUI Test");
 
     CShowGUI(g);
-    while (!quited) {
+
+    CShowButton(g, 10, 40, 100, 30, "Button", on_button, NULL);
+
+    CSetQuitCallback(g, on_quit, NULL);
+
+    while (CUpdateGUI(g)) {
 
     }
-    free(g);
+    CFreeGUI(g);
 }
 
 #endif

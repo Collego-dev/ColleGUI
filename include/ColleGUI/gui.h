@@ -9,10 +9,8 @@
 
 struct CGUIState{
     HWND hwnd;
-    unsigned int y;
-    unsigned int x;
-    unsigned int width;
-    unsigned int height;
+    unsigned int y, x;
+    unsigned int width, height;
     char title[256];
 }typedef CGUIState;
 
@@ -23,17 +21,34 @@ typedef struct {
 
 #else
 #include <X11/Xlib.h>
+#include <stdbool.h>
+
+struct Button {
+    int x, y, width, height;
+    const char *label;
+
+    /* CallBack */
+    void (*callback)(void *);
+    void *user_data;
+} typedef Button ;
 
 struct CGUIState{
     Display *display;
     XEvent event;
     Window window;
-    unsigned int y;
-    unsigned int x;
-    unsigned int width;
-    unsigned int height;
+    Atom wm_delete_window;
+    GC gc;
+    Button *buttons;
+
+    void (*quitcallback)(void *);
+    void *user_data;
+
+    unsigned int button_count;
+    unsigned int button_capacity;
+    unsigned int y, x;
+    unsigned int width, height;
     char title[256];
-}typedef CGUIState;
+} typedef CGUIState;
 
 #endif
 
@@ -129,6 +144,10 @@ bool CShowCheckBox(CGUIState *state, int x, int y, const char *label, bool check
 * @return true on success, false on failure
 */
 bool CShowListBox(CGUIState *state, int x, int y, int width, int height, const char **items, int item_count, void (*callback)(int, void *), void *user_data);
+
+bool CSetQuitCallback(CGUIState *state, void (*quitcallback)(void *), void *user_data);
+
+void CFreeGUI(CGUIState* state);
 
 
 #endif /* _INTERFACE_GUI_H */
