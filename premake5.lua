@@ -33,7 +33,7 @@ project "ColleGUI"
 
     filter "system:windows"
         defines { "MYLIBRARY_EXPORTS" }
-        links { "comctl32" }
+        links { "comctl32", "gdi32" }
     filter {} -- reset
 
 project "test"
@@ -61,6 +61,6 @@ project "test"
         links { "X11" }
 
     filter "system:windows"
-        links { "comctl32" }
+        links { "comctl32", "gdi32" }
     filter {} -- reset
 

@@ -25,10 +25,48 @@ void on_listbox(int index, void *user_data) {
     fflush(stdout);
 }
 
+void on_toolbar(int idx, void *user_data) {
+    printf("Toolbar button %d pressed\n", idx);
+    fflush(stdout);
+}
+void on_statusbar(const char *text, void *user_data) {
+    printf("StatusBar: %s\n", text);
+    fflush(stdout);
+}
+void on_progress(int value) {
+    printf("ProgressBar value: %d\n", value);
+    fflush(stdout);
+}
+void on_trackbar(int value, void *user_data) {
+    printf("TrackBar value: %d\n", value);
+    fflush(stdout);
+}
+void on_updown(int value, void *user_data) {
+    printf("UpDown value: %d\n", value);
+    fflush(stdout);
+}
+void on_listview(int idx, void *user_data) {
+    printf("ListView selected: %d\n", idx);
+    fflush(stdout);
+}
+void on_treeview(int idx, void *user_data) {
+    printf("TreeView selected: %d\n", idx);
+    fflush(stdout);
+}
+void on_tab(int idx, void *user_data) {
+    printf("Tab selected: %d\n", idx);
+    fflush(stdout);
+}
+void on_calendar(const char *date, void *user_data) {
+    printf("Calendar date: %s\n", date);
+    fflush(stdout);
+}
+void on_datetime(const char *dt, void *user_data) {
+    printf("DateTimePicker: %s\n", dt);
+    fflush(stdout);
+}
+
 int main() {
-    AllocConsole();
-    freopen("CONOUT$", "w", stdout);
-    setvbuf(stdout, NULL, _IONBF, 0);
     CGUIState *g = CCreateGUI(0, 0, 400, 300, "ColleGUI Test");
     CShowGUI(g);
     UpdateWindow(g->hwnd);

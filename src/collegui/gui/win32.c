@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <tchar.h>
 #include <commctrl.h>
+#include "design.h"
 
 #ifdef DEBUG
 #define LOG(fmt, ...) do { \
@@ -120,8 +121,7 @@ CGUIState *CUpdateGUI(CGUIState *state) {
 
 bool CShowButton(CGUIState *state, int x, int y, int width, int height, const char *label, void (*callback)(void *), void *user_data) {
     wchar_t wlabel[256];
-    MultiByteToWideChar(CP_UTF8, 0, label, -1, wlabel, 255);
-    wlabel[255] = L'\0';
+    MultiByteToWideChar(CP_UTF8, 0, label, -1, wlabel, sizeof(wlabel)/sizeof(wlabel[0]));
     HWND btn = CreateWindowW(
         L"BUTTON", wlabel,
         WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON | WS_TABSTOP,
@@ -134,26 +134,6 @@ bool CShowButton(CGUIState *state, int x, int y, int width, int height, const ch
         cb->callback = (void (*)(void *))callback;
         cb->user_data = user_data;
         SetWindowLongPtr(btn, GWLP_USERDATA, (LONG_PTR)cb);
-    }
-    return true;
-}
-
-bool CShowTextBox(CGUIState *state, int x, int y, int width, int height, const char *initial_text, void (*callback)(const char *, void *), void *user_data) {
-    wchar_t wtext[256];
-    MultiByteToWideChar(CP_UTF8, 0, initial_text, -1, wtext, 255);
-    wtext[255] = L'\0';
-    HWND edit = CreateWindowW(
-        L"EDIT", wtext,
-        WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT | WS_TABSTOP | ES_AUTOHSCROLL,
-        x, y, width, height,
-        state->hwnd, NULL, GetModuleHandleW(NULL), NULL
-    );
-    if (!edit) return false;
-    if (callback) {
-        CallbackData *cb = malloc(sizeof(CallbackData));
-        cb->callback = (void *)callback;
-        cb->user_data = user_data;
-        SetWindowLongPtr(edit, GWLP_USERDATA, (LONG_PTR)cb);
     }
     return true;
 }
@@ -212,6 +192,43 @@ bool CShowListBox(CGUIState *state, int x, int y, int width, int height, const c
         cb->user_data = user_data;
         SetWindowLongPtr(list, GWLP_USERDATA, (LONG_PTR)cb);
     }
+    return true;
+}
+
+bool CShowTextBox(CGUIState *state, int x, int y, int width, int height, const char *initial_text, void (*callback)(const char *, void *), void *user_data) {
+    wchar_t wtext[256];
+    MultiByteToWideChar(CP_UTF8, 0, initial_text, -1, wtext, 255);
+    wtext[255] = L'\0';
+    HWND edit = CreateWindowW(
+        L"EDIT", wtext,
+        WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT | WS_TABSTOP | ES_AUTOHSCROLL,
+        x, y, width, height,
+        state->hwnd, NULL, GetModuleHandleW(NULL), NULL
+    );
+    if (!edit) return false;
+    if (callback) {
+        CallbackData *cb = malloc(sizeof(CallbackData));
+        cb->callback = (void *)callback;
+        cb->user_data = user_data;
+        SetWindowLongPtr(edit, GWLP_USERDATA, (LONG_PTR)cb);
+    }
+    return true;
+}
+
+bool CSetFont(HWND hwnd, const char *font_name, int font_size, bool bold) {
+    wchar_t wfont[128];
+    MultiByteToWideChar(CP_UTF8, 0, font_name, -1, wfont, sizeof(wfont)/sizeof(wfont[0]));
+    HFONT hFont = CreateFontW(
+        -MulDiv(font_size, GetDeviceCaps(GetDC(hwnd), LOGPIXELSY), 72), // 高さ
+        0, 0, 0,
+        bold ? FW_BOLD : FW_NORMAL,
+        FALSE, FALSE, FALSE,
+        DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+        wfont
+    );
+    if (!hFont) return false;
+    SendMessageW(hwnd, WM_SETFONT, (WPARAM)hFont, TRUE);
     return true;
 }
 

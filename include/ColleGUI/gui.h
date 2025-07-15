@@ -20,9 +20,12 @@ typedef struct {
     void *user_data;
 } CallbackData;
 
+bool CSetFont(HWND hwnd, const char *font_name, int font_size, bool bold);
+
 #else
 #include <X11/Xlib.h>
 #include <stdbool.h>
+#include "../design.h"
 
 struct Button {
     int x, y, width, height;
