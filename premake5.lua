@@ -10,6 +10,7 @@ function common_library_settings()
 
     files {
         "src/**.c",
+        "src/collegui/gui.c",
         "include/**.h"
     }
 

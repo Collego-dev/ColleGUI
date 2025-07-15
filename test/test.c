@@ -27,6 +27,7 @@ void on_listbox(int index, void *user_data) {
 int main() {
     CGUIState *g = CCreateGUI(0, 0, 400, 300, "ColleGUI Test");
     CShowGUI(g);
+    UpdateWindow(g->hwnd);
 
     CShowLabel(g, 10, 10, 100, 24, "Label");
     CShowButton(g, 10, 40, 100, 30, "Button", on_button, NULL);
