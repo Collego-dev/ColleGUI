@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-bool quited = false;
-
 #ifdef _WIN32
 
 void on_button(void *user_data) {
