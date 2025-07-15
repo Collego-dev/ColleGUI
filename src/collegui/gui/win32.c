@@ -24,7 +24,7 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
                 if (cb && cb->callback) {
                     wchar_t className[32];
                     GetClassNameW(ctrl, className, 31);
-                    if (wcscmp(className, L"BUTTON") == 0) {
+                    if (_wcsicmp(className, L"BUTTON") == 0) {
                         LONG_PTR style = GetWindowLongPtr(ctrl, GWL_STYLE);
                         if (style & BS_AUTOCHECKBOX) {
                             BOOL checked = SendMessageW(ctrl, BM_GETCHECK, 0, 0) == BST_CHECKED;
@@ -32,13 +32,13 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
                         } else {
                             ((void (*)(void *))cb->callback)(cb->user_data);
                         }
-                    } else if (wcscmp(className, L"EDIT") == 0) {
+                    } else if (_wcsicmp(className, L"EDIT") == 0) {
                         wchar_t wbuf[256];
                         GetWindowTextW(ctrl, wbuf, 255);
                         char buf[256];
                         WideCharToMultiByte(CP_UTF8, 0, wbuf, -1, buf, 255, NULL, NULL);
                         ((void (*)(const char *, void *))cb->callback)(buf, cb->user_data);
-                    } else if (wcscmp(className, L"LISTBOX") == 0) {
+                    } else if (_wcsicmp(className, L"LISTBOX") == 0) {
                         int sel = (int)SendMessageW(ctrl, LB_GETCURSEL, 0, 0);
                         ((void (*)(int, void *))cb->callback)(sel, cb->user_data);
                     }
@@ -59,39 +59,23 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
 }
 
 CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const char *title) {
-    wchar_t szClassName[256];
-    MultiByteToWideChar(CP_UTF8, 0, title, -1, szClassName, 255);
-    szClassName[255] = L'\0';
-    for (int i = 0; szClassName[i] != L'\0'; ++i) {
-        wchar_t c = szClassName[i];
-        if (!((c >= L'A' && c <= L'Z') ||
-              (c >= L'a' && c <= L'z') ||
-              (c >= L'0' && c <= L'9'))) {
-            szClassName[i] = L'_';
-        }
-    }
-
-    wchar_t szWindowTitle[256];
-    MultiByteToWideChar(CP_UTF8, 0, title, -1, szWindowTitle, 255);
-    szWindowTitle[255] = L'\0';
-
-    WNDCLASSW wc = {0};
+    WNDCLASSA wc = {0};
     wc.lpfnWndProc = MainWndProc;
-    wc.hInstance = GetModuleHandleW(NULL);
-    wc.lpszClassName = szClassName;
-    wc.hCursor = LoadCursorW(NULL, MAKEINTRESOURCEW(IDC_ARROW));
+    wc.hInstance = GetModuleHandleA(NULL);
+    wc.lpszClassName = title;
+    wc.hCursor = LoadCursorA(NULL, MAKEINTRESOURCEA(IDC_ARROW));
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 
-    if (!GetClassInfoW(wc.hInstance, szClassName, &wc)) {
-        if (!RegisterClassW(&wc)) {
-            LOG("RegisterClassW failed: %lu\n", GetLastError());
+    if (!GetClassInfoA(wc.hInstance, title, &wc)) {
+        if (!RegisterClassA(&wc)) {
+            LOG("RegisterClassA failed: %lu\n", GetLastError());
             return NULL;
         }
     }
 
-    HWND hwnd = CreateWindowW(
-        szClassName,
-        szWindowTitle,
+    HWND hwnd = CreateWindowA(
+	title,
+	title,
         WS_OVERLAPPEDWINDOW,
         x, y,
         width, height,
