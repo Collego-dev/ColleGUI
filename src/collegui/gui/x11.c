@@ -1,10 +1,9 @@
-#include "ColleGUI/gui.h"
-#include <X11/X.h>
-#include <string.h>
 #ifndef _WIN32
+#include "ColleGUI/gui.h"
 #include <X11/Xlib.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "ColleGUI.h"
 
 
