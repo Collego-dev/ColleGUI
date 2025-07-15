@@ -1,5 +1,5 @@
-#include <X11/X.h>
 #ifndef _WIN32
+#include <X11/X.h>
 #include "ColleGUI/gui.h"
 #include <X11/Xlib.h>
 #include <stdio.h>

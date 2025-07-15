@@ -6,6 +6,7 @@
 #include <tchar.h>
 #include <commctrl.h>
 #include <wingdi.h>
+#include <stdbool.h>
 
 struct CGUIState{
     HWND hwnd;
