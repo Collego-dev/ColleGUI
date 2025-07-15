@@ -3,9 +3,49 @@
 #include "ColleGUI.h"
 #include <windows.h>
 #include <tchar.h>
+#include <commctrl.h>
+
+#ifdef DEBUG
+#define LOG(fmt, ...) do { \
+    char _log_buf[256]; \
+    snprintf(_log_buf, sizeof(_log_buf), fmt, __VA_ARGS__); \
+    OutputDebugStringA(_log_buf); \
+} while(0)
+#else
+#define LOG(fmt, ...) do {} while(0)
+#endif
 
 static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
+        case WM_COMMAND: {
+            HWND ctrl = (HWND)lParam;
+            if (ctrl) {
+                CallbackData *cb = (CallbackData *)GetWindowLongPtr(ctrl, GWLP_USERDATA);
+                if (cb && cb->callback) {
+                    wchar_t className[32];
+                    GetClassNameW(ctrl, className, 31);
+                    if (wcscmp(className, L"BUTTON") == 0) {
+                        LONG_PTR style = GetWindowLongPtr(ctrl, GWL_STYLE);
+                        if (style & BS_AUTOCHECKBOX) {
+                            BOOL checked = SendMessageW(ctrl, BM_GETCHECK, 0, 0) == BST_CHECKED;
+                            ((void (*)(bool, void *))cb->callback)((checked ? true : false), cb->user_data);
+                        } else {
+                            ((void (*)(void *))cb->callback)(cb->user_data);
+                        }
+                    } else if (wcscmp(className, L"EDIT") == 0) {
+                        wchar_t wbuf[256];
+                        GetWindowTextW(ctrl, wbuf, 255);
+                        char buf[256];
+                        WideCharToMultiByte(CP_UTF8, 0, wbuf, -1, buf, 255, NULL, NULL);
+                        ((void (*)(const char *, void *))cb->callback)(buf, cb->user_data);
+                    } else if (wcscmp(className, L"LISTBOX") == 0) {
+                        int sel = (int)SendMessageW(ctrl, LB_GETCURSEL, 0, 0);
+                        ((void (*)(int, void *))cb->callback)(sel, cb->user_data);
+                    }
+                }
+            }
+            break;
+        }
         case WM_CLOSE:
             DestroyWindow(hwnd);
             return 0;
@@ -15,13 +55,23 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
         default:
             return DefWindowProc(hwnd, msg, wParam, lParam);
     }
+    return 0;
 }
 
 CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, const char *title) {
     wchar_t szClassName[256];
-    wchar_t szWindowTitle[256];
     MultiByteToWideChar(CP_UTF8, 0, title, -1, szClassName, 255);
     szClassName[255] = L'\0';
+    for (int i = 0; szClassName[i] != L'\0'; ++i) {
+        wchar_t c = szClassName[i];
+        if (!((c >= L'A' && c <= L'Z') ||
+              (c >= L'a' && c <= L'z') ||
+              (c >= L'0' && c <= L'9'))) {
+            szClassName[i] = L'_';
+        }
+    }
+
+    wchar_t szWindowTitle[256];
     MultiByteToWideChar(CP_UTF8, 0, title, -1, szWindowTitle, 255);
     szWindowTitle[255] = L'\0';
 
@@ -32,8 +82,11 @@ CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, con
     wc.hCursor = LoadCursorW(NULL, MAKEINTRESOURCEW(IDC_ARROW));
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 
-    if (!RegisterClassW(&wc) && GetLastError() != ERROR_CLASS_ALREADY_EXISTS) {
-        return NULL;
+    if (!GetClassInfoW(wc.hInstance, szClassName, &wc)) {
+        if (!RegisterClassW(&wc)) {
+            LOG("RegisterClassW failed: %lu\n", GetLastError());
+            return NULL;
+        }
     }
 
     HWND hwnd = CreateWindowW(
@@ -48,11 +101,13 @@ CGUIState *CCreateGUI(int x, int y, unsigned int width, unsigned int height, con
     );
 
     if (!hwnd) {
+        LOG("CreateWindowW failed: %lu\n", GetLastError());
         return NULL;
     }
 
     CGUIState *state = malloc(sizeof(CGUIState));
     if (!state) {
+        LOG("malloc for CGUIState failed\n");
         DestroyWindow(hwnd);
         return NULL;
     }
@@ -79,50 +134,6 @@ CGUIState *CUpdateGUI(CGUIState *state) {
     return state;
 }
 
-static LRESULT CALLBACK ButtonWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    if (msg == WM_COMMAND) {
-        CallbackData *cb = (CallbackData *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-        if (cb && cb->callback) cb->callback(cb->user_data);
-    }
-    return DefWindowProc(hwnd, msg, wParam, lParam);
-}
-
-static LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    if (msg == WM_COMMAND && HIWORD(wParam) == EN_CHANGE) {
-        CallbackData *cb = (CallbackData *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-        if (cb && cb->callback) {
-            wchar_t wbuf[256];
-            GetWindowTextW(hwnd, wbuf, 255);
-            char buf[256];
-            WideCharToMultiByte(CP_UTF8, 0, wbuf, -1, buf, 255, NULL, NULL);
-            ((void (*)(const char *, void *))cb->callback)(buf, cb->user_data);
-        }
-    }
-    return DefWindowProc(hwnd, msg, wParam, lParam);
-}
-
-static LRESULT CALLBACK CheckBoxWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    if (msg == WM_COMMAND && HIWORD(wParam) == BN_CLICKED) {
-        CallbackData *cb = (CallbackData *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-        if (cb && cb->callback) {
-            BOOL checked = SendMessageW(hwnd, BM_GETCHECK, 0, 0) == BST_CHECKED;
-            ((void (*)(bool, void *))cb->callback)(checked, cb->user_data);
-        }
-    }
-    return DefWindowProc(hwnd, msg, wParam, lParam);
-}
-
-static LRESULT CALLBACK ListBoxWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    if (msg == WM_COMMAND && HIWORD(wParam) == LBN_SELCHANGE) {
-        CallbackData *cb = (CallbackData *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-        if (cb && cb->callback) {
-            int sel = (int)SendMessageW(hwnd, LB_GETCURSEL, 0, 0);
-            ((void (*)(int, void *))cb->callback)(sel, cb->user_data);
-        }
-    }
-    return DefWindowProc(hwnd, msg, wParam, lParam);
-}
-
 bool CShowButton(CGUIState *state, int x, int y, int width, int height, const char *label, void (*callback)(void *), void *user_data) {
     wchar_t wlabel[256];
     MultiByteToWideChar(CP_UTF8, 0, label, -1, wlabel, 255);
@@ -136,10 +147,9 @@ bool CShowButton(CGUIState *state, int x, int y, int width, int height, const ch
     if (!btn) return false;
     if (callback) {
         CallbackData *cb = malloc(sizeof(CallbackData));
-        cb->callback = callback;
+        cb->callback = (void (*)(void *))callback;
         cb->user_data = user_data;
         SetWindowLongPtr(btn, GWLP_USERDATA, (LONG_PTR)cb);
-        SetWindowLongPtr(btn, GWLP_WNDPROC, (LONG_PTR)ButtonWndProc);
     }
     return true;
 }
@@ -157,11 +167,9 @@ bool CShowTextBox(CGUIState *state, int x, int y, int width, int height, const c
     if (!edit) return false;
     if (callback) {
         CallbackData *cb = malloc(sizeof(CallbackData));
-        // キャストして格納
-        cb->callback = (void (*)(void *))callback;
+        cb->callback = (void *)callback;
         cb->user_data = user_data;
         SetWindowLongPtr(edit, GWLP_USERDATA, (LONG_PTR)cb);
-        SetWindowLongPtr(edit, GWLP_WNDPROC, (LONG_PTR)EditWndProc);
     }
     return true;
 }
@@ -193,10 +201,9 @@ bool CShowCheckBox(CGUIState *state, int x, int y, const char *label, bool check
     SendMessageW(chk, BM_SETCHECK, checked ? BST_CHECKED : BST_UNCHECKED, 0);
     if (callback) {
         CallbackData *cb = malloc(sizeof(CallbackData));
-        cb->callback = (void (*)(void *))callback;
+        cb->callback = (void *)callback;
         cb->user_data = user_data;
         SetWindowLongPtr(chk, GWLP_USERDATA, (LONG_PTR)cb);
-        SetWindowLongPtr(chk, GWLP_WNDPROC, (LONG_PTR)CheckBoxWndProc);
     }
     return true;
 }
@@ -217,10 +224,9 @@ bool CShowListBox(CGUIState *state, int x, int y, int width, int height, const c
     }
     if (callback) {
         CallbackData *cb = malloc(sizeof(CallbackData));
-        cb->callback = (void (*)(void *))callback;
+        cb->callback = (void *)callback;
         cb->user_data = user_data;
         SetWindowLongPtr(list, GWLP_USERDATA, (LONG_PTR)cb);
-        SetWindowLongPtr(list, GWLP_WNDPROC, (LONG_PTR)ListBoxWndProc);
     }
     return true;
 }

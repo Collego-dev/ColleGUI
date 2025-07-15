@@ -5,26 +5,30 @@
 #include <stdlib.h>
 
 #ifdef _WIN32
-
 void on_button(void *user_data) {
-    MessageBoxA(NULL, "Button pressed!", "Callback", MB_OK);
+    printf("Button pressed!\n");
+    fflush(stdout);
 }
 
 void on_checkbox(bool checked, void *user_data) {
-    MessageBoxA(NULL, checked ? "Checked" : "Unchecked", "Checkbox", MB_OK);
+    printf("Checkbox: %s\n", checked ? "Checked" : "Unchecked");
+    fflush(stdout);
 }
 
 void on_textbox(const char *text, void *user_data) {
-    MessageBoxA(NULL, text, "TextBox Changed", MB_OK);
+    printf("TextBox Changed: %s\n", text);
+    fflush(stdout);
 }
 
 void on_listbox(int index, void *user_data) {
-    char buf[64];
-    sprintf(buf, "Selected index: %d", index);
-    MessageBoxA(NULL, buf, "ListBox", MB_OK);
+    printf("ListBox selected index: %d\n", index);
+    fflush(stdout);
 }
 
 int main() {
+    AllocConsole();
+    freopen("CONOUT$", "w", stdout);
+    setvbuf(stdout, NULL, _IONBF, 0);
     CGUIState *g = CCreateGUI(0, 0, 400, 300, "ColleGUI Test");
     CShowGUI(g);
     UpdateWindow(g->hwnd);
@@ -69,4 +73,3 @@ int main() {
 }
 
 #endif
-
