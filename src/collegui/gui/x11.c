@@ -1,3 +1,4 @@
+#include <X11/X.h>
 #ifndef _WIN32
 #include "ColleGUI/gui.h"
 #include <X11/Xlib.h>
@@ -63,30 +64,50 @@ CGUIState *CUpdateGUI(CGUIState *state) {
 
     XEvent *ev = &state->event;
 
-    if (ev->type == Expose) {
-        for (int i = 0; i < state->button_count; i++) {
-            Button *btn = &state->buttons[i];
-            XDrawRectangle(state->display, state->window, state->gc, btn->x, btn->y, btn->width, btn->height);
-            XDrawString(state->display, state->window, state->gc, btn->x + 5, btn->y + 15, btn->label, strlen(btn->label));
-        }
-    } else if (ev->type == ButtonPress) {
-       int x = ev->xbutton.x;
-       int y = ev->xbutton.y;
+    switch (ev->type) {
+        case Expose:
+            for (int i = 0; i < state->button_count; i++) {
+                Button *btn = &state->buttons[i];
+                XDrawRectangle(state->display, state->window, state->gc, btn->x, btn->y, btn->width, btn->height);
+                XDrawString(state->display, state->window, state->gc, btn->x + 5, btn->y + 15, btn->label, strlen(btn->label));
+            }
+            break;
 
-       for (int i=0; i < state->button_count; i++) {
-           Button *b = &state->buttons[i];
-           if (x >= b->x && x <= b->x + b->width &&
-                   y >= b->y && y <= b->y + b->height) {
-               if (b->callback)
-                   b->callback(b->user_data);
+        case ButtonPress:
+            switch (ev->xbutton.button) {
+                case Button1: 
+                    int x = ev->xbutton.x;
+                    int y = ev->xbutton.y;
+
+                    for (int i=0; i < state->button_count; i++) {
+                        Button *b = &state->buttons[i];
+                        if (x >= b->x && x <= b->x + b->width &&
+                                y >= b->y && y <= b->y + b->height) {
+                            if (b->callback)
+                                b->callback(b->user_data);
+                        }
+                   }
+                   break;
+                case Button2:
+                   break;
+                case Button3:
+                   break;
+                case Button4:
+                   break;
+                case Button5:
+                   break;
+                default:
+                   fprintf(stderr, "ColleGUI(X11): Unknown button: %d\n", ev->xbutton.button);
+                   break;
+            }
+           break;
+
+        case ClientMessage:
+           if (ev->xclient.data.l[0] == state->wm_delete_window) {
+               state->quitcallback(state->user_data);
            }
-       }
-   } else if (ev->type == ClientMessage) {
-       if (ev->xclient.data.l[0] == state->wm_delete_window) {
-           state->quitcallback(state->user_data);
-       }
-       return NULL;
-   }
+           return NULL;
+    }
    return state;
 }
 
