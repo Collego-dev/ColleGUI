@@ -9,14 +9,10 @@ const MaterialButtonStyle DefaultMaterialButtonStyle = {
     .font_family = "Segoe UI",
     .font_size = 16,
     .border_width = 0,
-    .border_color = 0x00000000
-};
+    .border_color = 0x00000000};
 
 const MaterialLabelStyle DefaultMaterialLabelStyle = {
-    .fg_color = 0xDD000000,
-    .font_family = "Segoe UI",
-    .font_size = 16
-};
+    .fg_color = 0xDD000000, .font_family = "Segoe UI", .font_size = 16};
 
 const MaterialTextBoxStyle DefaultMaterialTextBoxStyle = {
     .bg_color = 0xFFFFFFFF,
@@ -25,8 +21,7 @@ const MaterialTextBoxStyle DefaultMaterialTextBoxStyle = {
     .border_width = 1,
     .border_color = 0x22000000,
     .font_family = "Segoe UI",
-    .font_size = 16
-};
+    .font_size = 16};
 
 const MaterialCheckBoxStyle DefaultMaterialCheckBoxStyle = {
     .box_color = 0xFF2196F3,
@@ -35,8 +30,7 @@ const MaterialCheckBoxStyle DefaultMaterialCheckBoxStyle = {
     .label_color = 0xDD000000,
     .border_radius = 2,
     .font_family = "Segoe UI",
-    .font_size = 16
-};
+    .font_size = 16};
 
 const MaterialListBoxStyle DefaultMaterialListBoxStyle = {
     .bg_color = 0xFFFFFFFF,
@@ -47,8 +41,7 @@ const MaterialListBoxStyle DefaultMaterialListBoxStyle = {
     .border_width = 1,
     .border_color = 0x22000000,
     .font_family = "Segoe UI",
-    .font_size = 16
-};
+    .font_size = 16};
 
 const MaterialToolbarStyle DefaultMaterialToolbarStyle = {
     .bg_color = 0xFF2196F3,
@@ -56,5 +49,4 @@ const MaterialToolbarStyle DefaultMaterialToolbarStyle = {
     .border_radius = 0,
     .elevation = 2,
     .font_family = "Segoe UI",
-    .font_size = 16
-};
+    .font_size = 16};
